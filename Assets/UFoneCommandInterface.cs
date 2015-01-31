@@ -8,7 +8,7 @@ public abstract class UFoneCommandInterface {
 		dataReceived.AddRange(ReceivedData);
 	}
 
-	public abstract void Loop();
+	public abstract void Update();
 
 	//Retrived Data
 	protected List<byte> dataReceived = new List<byte>();

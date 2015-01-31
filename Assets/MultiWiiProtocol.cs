@@ -76,7 +76,7 @@ public class MultiWiiProtocol : UFoneCommandInterface{
 	private const int MSP_BIND = 240;
 	private const int MSP_EEPROM_WRITE = 250;
 
-	override public void Loop()
+	override public void Update()
 	{
 		for (int i = 0; i < dataReceived.Count; i++) 
 		{
@@ -202,6 +202,7 @@ public class MultiWiiProtocol : UFoneCommandInterface{
 		switch(commandNum)
 		{
 			case MSP_RAW_IMU:
+			//Reference to the MultiWii-EZ GUI.
 			int accX = GetInt16(copied);
 			int accY = GetInt16(copied);
 			int accZ = GetInt16(copied);
@@ -220,8 +221,28 @@ public class MultiWiiProtocol : UFoneCommandInterface{
 			{
 				Debug("[ERROR]IMUResultEventHandler Not Defined");
 			}
-
 			break;
+
+			case MSP_RC:
+			int roll =  GetUNInt16(copied);
+			int pitch =  GetUNInt16(copied);
+			int yaw =  GetUNInt16(copied);
+			int throttle =  GetUNInt16(copied);
+			int AUX1 =  GetUNInt16(copied);
+			int AUX2 =  GetUNInt16(copied);
+			int AUX3 =  GetUNInt16(copied);
+			int AUX4 =  GetUNInt16(copied);
+
+			if(RCResultEvent != null)
+			{
+				RCResultEvent.Invoke(roll,pitch,yaw,throttle,AUX1,AUX2,AUX3,AUX4);
+			}
+			else
+			{
+				Debug("[ERROR]RCResultEvent Not Defined");
+			}
+			break;
+
 
 			default:
 				Debug("[VALIDATE_UNHANDLED_COMMAND]"+byteToIntStr(CommandBytes.ToArray()));
@@ -234,15 +255,19 @@ public class MultiWiiProtocol : UFoneCommandInterface{
 		target.RemoveRange (0, num);
 	}
 
+	public int GetUNInt16(List<byte> target)
+	{
+		int result = System.BitConverter.ToUInt16 (target.ToArray(),0);
+		target.RemoveRange (0, 2);
+		
+		return result;
+	}
+
+
 	public int GetInt16(List<byte> target)
 	{
-		byte HigherByte = target[1];
-		byte LowerByte = target[0];
-
-
+		int result = System.BitConverter.ToInt16 (target.ToArray(),0);
 		target.RemoveRange (0, 2);
-
-		int result = (short)( LowerByte | (HigherByte << 8));
 
 		return result;
 	}
@@ -257,21 +282,28 @@ public class MultiWiiProtocol : UFoneCommandInterface{
 
  	override public void RequestIMU()
 	{
-		List<byte> currentCommand = new List<byte>();
-
-		currentCommand.AddRange (PREAMBLE_HEADER);
-		currentCommand.Add((byte)DIRECTION_TO_DRONE);
-		currentCommand.Add(SIZE_ZERO);
-		currentCommand.Add(MSP_RAW_IMU);
-		AddCheckSum(currentCommand,CHECK_SUM_START_INDEX);
-
+		List<byte> currentCommand = MakeRequestCommand (MSP_RAW_IMU);
 		dataToSend.AddRange(currentCommand);
 
 	}
 
 	override public void RequestRC()
 	{
+		List<byte> currentCommand = MakeRequestCommand (MSP_RC);
+		dataToSend.AddRange(currentCommand);
+	}
 
+	private List<byte> MakeRequestCommand(byte commandFlag)
+	{
+		List<byte> currentCommand = new List<byte>();
+		
+		currentCommand.AddRange (PREAMBLE_HEADER);
+		currentCommand.Add((byte)DIRECTION_TO_DRONE);
+		currentCommand.Add(SIZE_ZERO);
+		currentCommand.Add(commandFlag);
+		AddCheckSum(currentCommand,CHECK_SUM_START_INDEX);
+
+		return currentCommand;
 	}
 
 	override public void SetRawRC (int Roll, int Pitch, int Yaw, int Throttle, int AUX1, int AUX2, int AUX3, int AUX4)
@@ -307,12 +339,13 @@ public class MultiWiiProtocol : UFoneCommandInterface{
 	
 	private void ClearState (bool validate,string reason="")
 	{
-		if (!validate) {
-						Debug ("[DropByte:" + reason + "]" + byteToIntStr (CommandBytes.ToArray ()));
-				} else {
-
-			Debug("[Validate]"+byteToIntStr (CommandBytes.ToArray ()));
-				}
+		if (!validate) 
+		{
+				Debug ("[DropByte:" + reason + "]" + byteToIntStr (CommandBytes.ToArray ()));
+		} else 
+		{
+				//Debug("[Validate]"+byteToIntStr (CommandBytes.ToArray ()));
+		}
 
 		HEADER_INDEX = 0;
 		DEMANDING_SIZE = 0;

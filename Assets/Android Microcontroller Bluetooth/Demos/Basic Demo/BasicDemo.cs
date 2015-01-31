@@ -26,12 +26,17 @@ public class BasicDemo : MonoBehaviour {
 				Debug.Log ("IMU: accX=" + accx + " accY=" + accy + " accZ=" + accz + " gyrx=" + gyrx + " gyry=" + gyry + " gyrz=" + gyrz + " magx=" + magx + " magy=" + magy + " magz=" + magz);
 		};
 
+		UFoneInterface.RCResultEvent += (int Roll,int Pitch,int Yaw,int Throttle,int AUX1,int AUX2,int AUX3,int AUX4) => 
+		{
+				Debug.Log ("RC: Roll=" + Roll + " PITCH=" + Pitch + " Yaw=" + Yaw + " Throttle=" + Throttle + " AUX1=" + AUX1 + " AUX2=" + AUX2 + " AUX3=" + AUX3 + " AUX4=" + AUX4);
+		};
+
 	}
 
 	void Update()
 	{
 		UFoneInterface.AddData (BtConnector.readBuffer());
-		UFoneInterface.Loop();
+		UFoneInterface.Update();
 
 
 		//SendData
@@ -48,33 +53,37 @@ public class BasicDemo : MonoBehaviour {
 	void OnGUI(){
 		GUI.Label(new Rect(0, 0, Screen.width*0.15f, Screen.height*0.1f),"Module Name ");
 
-		stringToEdit = GUI.TextField(new Rect(Screen.width*0.15f, 0, Screen.width*0.8f, Screen.height*0.1f), stringToEdit);
-		GUI.Label(new Rect(0,Screen.height*0.2f,Screen.width,Screen.height*0.1f),"Arduino Says : " + fromArduino);
-		GUI.Label(new Rect(0,Screen.height*0.3f,Screen.width,Screen.height*0.1f),"from PlugIn : " + BtConnector.readControlData ());
-
-		if(GUI.Button(new Rect(0,Screen.height*0.4f,Screen.width,Screen.height*0.1f), "Try Connect")) 
-		{
-				if (!BtConnector.isBluetoothEnabled ()){
-					BtConnector.askEnableBluetooth();
-				} else BtConnector.connect();
-		}
-
 
 		if(BtConnector.isConnected())
 		{
-		
-			if(GUI.Button(new Rect(0,Screen.height*0.6f,Screen.width,Screen.height*0.1f), "RequestIMU")) {
-
+			if(GUI.Button(new Rect(0,Screen.height*0.6f,Screen.width,Screen.height*0.1f), "RequestIMU")) 
+			{
 				UFoneInterface.RequestIMU();
 			}
-			if(GUI.Button(new Rect(0,Screen.height*0.5f,Screen.width,Screen.height*0.1f), "SetRawRC")) {
-				
-		
+			if(GUI.Button(new Rect(0,Screen.height*0.5f,Screen.width,Screen.height*0.1f), "RequestRC")) 
+			{
+				UFoneInterface.RequestRC();
 			}
 
-			if(GUI.Button(new Rect(0,Screen.height*0.7f,Screen.width,Screen.height*0.1f), "Close")) {
+			if(GUI.Button(new Rect(0,Screen.height*0.7f,Screen.width,Screen.height*0.1f), "Close")) 
+			{
 				BtConnector.close();
 			}
+		}
+		else
+		{
+			if(GUI.Button(new Rect(0,Screen.height*0.4f,Screen.width,Screen.height*0.1f), "Try Connect")) 
+			{
+				if (!BtConnector.isBluetoothEnabled ())
+				{
+					BtConnector.askEnableBluetooth();
+				} 
+				else 
+				{
+					BtConnector.connect();
+				}
+			}
+
 		}
 	}
 
