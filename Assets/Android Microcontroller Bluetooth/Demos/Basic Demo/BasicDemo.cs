@@ -13,6 +13,9 @@ public class BasicDemo : MonoBehaviour {
 	void Start () {
 
 		BtConnector.moduleName (stringToEdit);
+
+
+
 		//BtConnector.sho
 
 		UFoneInterface = new MultiWiiProtocol();
@@ -38,6 +41,8 @@ public class BasicDemo : MonoBehaviour {
 		UFoneInterface.AddData (BtConnector.readBuffer());
 		UFoneInterface.Update();
 
+
+		Debug.Log ("Picked:"+BtConnector.isDevicePicked+":"+BtConnector.getPickedDeviceName());
 		//if(BtConnector.isConnected())
 		//UFoneInterface.SetRawRC(1400,1410,1420,1000,1950,1500,1500,1501);
 
@@ -78,10 +83,7 @@ public class BasicDemo : MonoBehaviour {
 			}
 
 
-			if(GUI.Button(new Rect(0,Screen.height*0.9f,Screen.width,Screen.height*0.1f), "Close")) 
-			{
-				BtConnector.close();
-			}
+
 		}
 		else
 		{
@@ -95,6 +97,13 @@ public class BasicDemo : MonoBehaviour {
 				{
 					BtConnector.connect();
 				}
+
+
+			}
+
+			if(GUI.Button(new Rect(0,Screen.height*0.9f,Screen.width,Screen.height*0.1f), "Show")) 
+			{
+				BtConnector.showDevices();
 			}
 
 		}
