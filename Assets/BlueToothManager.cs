@@ -9,6 +9,10 @@ public class BlueToothManager : MonoBehaviour {
 	public GameObject ButtonDisconnect;
 	public GameObject ArmButton;
 	public GameObject DisArmButton;
+	public GameObject JoySticks;
+	public CNJoystick leftStick;
+	public CNJoystick rightStick;
+
 
 	public bool Armed = false;
 
@@ -57,13 +61,13 @@ public class BlueToothManager : MonoBehaviour {
 
 	public void ARM()
 	{
-		UFOneAPI.SetRawRC (1500, 1500, 1500, 1000, 2000, 1500, 1500, 1500);
+		AUX1 = RANGE_MAX;
 		Armed = true;
 	}
 
 	public void DISARM()
 	{
-		UFOneAPI.SetRawRC (1500, 1500, 1500, 1000, 1000, 1500, 1500, 1500);
+		AUX1 = RANGE_MIN;
 		Armed = false;
 	}
 
@@ -77,12 +81,50 @@ public class BlueToothManager : MonoBehaviour {
 		{
 			Debug.Log(log);
 		};
-	
+
+		leftStick.ControllerMovedEvent+= (position, stick) => 
+		{
+			int dif = (RANGE_MAX - RANGE_MIN) / 2;
+			int mean = (RANGE_MAX + RANGE_MIN) / 2;
+
+			ROLL = (ushort) (position.x * dif + mean);
+			PITCH = (ushort)(position.y * dif + mean);
+
+			Debug.Log("Left:"+position.x+":"+position.y);
+		};
+
+		leftStick.ControllerMovedEvent+= (position, stick) => 
+		{
+			int dif = (RANGE_MAX - RANGE_MIN) / 2;
+			int mean = (RANGE_MAX + RANGE_MIN) / 2;
+			
+			YAW = (ushort)(position.x * dif + mean);
+			THROTTLE = (ushort)(position.y * dif + mean);
+
+			Debug.Log("Right:"+position.x+":"+position.y);
+		};
 	}
+
+	public const int RANGE_MAX = 2000;
+	public const int RANGE_MIN = 1000;
+
+	private ushort YAW = 1500;
+	private ushort PITCH = 1500;
+	private ushort ROLL = 1500;
+	private ushort THROTTLE = 1000;
+	private ushort AUX1 = 1000;
+	private ushort AUX2 = 1000;
+	private ushort AUX3 = 1000;
+	private ushort AUX4 = 1000;
+
 	
 	// Update is called once per frame
 	void Update () {
 
+		if (isConnected) 
+		{
+			UFOneAPI.SetRawRC(ROLL,PITCH,YAW,THROTTLE,AUX1,AUX2,AUX3,AUX4);
+		}
 
 		HandleBlueTooth();
 
@@ -106,7 +148,7 @@ public class BlueToothManager : MonoBehaviour {
 	{
 		ArmButton.SetActive(!Armed && BtConnector.isConnected ());
 		DisArmButton.SetActive(Armed && BtConnector.isConnected ());
-
+		//JoySticks.SetActive (BtConnector.isConnected ());
 
 		if (BtConnector.isConnected ()) 
 		{
