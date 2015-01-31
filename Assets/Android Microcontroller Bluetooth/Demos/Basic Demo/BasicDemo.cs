@@ -21,12 +21,12 @@ public class BasicDemo : MonoBehaviour {
 				Debug.Log (log);
 		};
 
-		UFoneInterface.IMUResultEvent += (int accx,int accy,int accz,int gyrx,int gyry,int gyrz,int magx,int magy,int magz) =>
+		UFoneInterface.IMUResultEvent += (short accx,short accy,short accz,short gyrx,short gyry,short gyrz,short magx,short magy,short magz) =>
 		{
 				Debug.Log ("IMU: accX=" + accx + " accY=" + accy + " accZ=" + accz + " gyrx=" + gyrx + " gyry=" + gyry + " gyrz=" + gyrz + " magx=" + magx + " magy=" + magy + " magz=" + magz);
 		};
 
-		UFoneInterface.RCResultEvent += (int Roll,int Pitch,int Yaw,int Throttle,int AUX1,int AUX2,int AUX3,int AUX4) => 
+		UFoneInterface.RCResultEvent += (ushort Roll,ushort Pitch,ushort Yaw,ushort Throttle,ushort AUX1,ushort AUX2,ushort AUX3,ushort AUX4) => 
 		{
 				Debug.Log ("RC: Roll=" + Roll + " PITCH=" + Pitch + " Yaw=" + Yaw + " Throttle=" + Throttle + " AUX1=" + AUX1 + " AUX2=" + AUX2 + " AUX3=" + AUX3 + " AUX4=" + AUX4);
 		};
@@ -38,6 +38,8 @@ public class BasicDemo : MonoBehaviour {
 		UFoneInterface.AddData (BtConnector.readBuffer());
 		UFoneInterface.Update();
 
+		//if(BtConnector.isConnected())
+		//UFoneInterface.SetRawRC(1400,1410,1420,1000,1950,1500,1500,1501);
 
 		//SendData
 		byte[] dataToSend = UFoneInterface.GetRawCommand();
@@ -56,16 +58,27 @@ public class BasicDemo : MonoBehaviour {
 
 		if(BtConnector.isConnected())
 		{
-			if(GUI.Button(new Rect(0,Screen.height*0.6f,Screen.width,Screen.height*0.1f), "RequestIMU")) 
+			if(GUI.Button(new Rect(0,Screen.height*0.5f,Screen.width,Screen.height*0.1f), "RequestIMU")) 
 			{
 				UFoneInterface.RequestIMU();
 			}
-			if(GUI.Button(new Rect(0,Screen.height*0.5f,Screen.width,Screen.height*0.1f), "RequestRC")) 
+			if(GUI.Button(new Rect(0,Screen.height*0.6f,Screen.width,Screen.height*0.1f), "RequestRC")) 
 			{
 				UFoneInterface.RequestRC();
 			}
 
-			if(GUI.Button(new Rect(0,Screen.height*0.7f,Screen.width,Screen.height*0.1f), "Close")) 
+			if(GUI.Button(new Rect(0,Screen.height*0.7f,Screen.width,Screen.height*0.1f), "ARM")) 
+			{
+				UFoneInterface.SetRawRC(1400,1410,1420,1000,1950,1500,1500,1501);
+			}
+
+			if(GUI.Button(new Rect(0,Screen.height*0.8f,Screen.width,Screen.height*0.1f), "DisArm")) 
+			{
+				UFoneInterface.SetRawRC(1400,1410,1420,1000,1050,1500,1500,1500);
+			}
+
+
+			if(GUI.Button(new Rect(0,Screen.height*0.9f,Screen.width,Screen.height*0.1f), "Close")) 
 			{
 				BtConnector.close();
 			}

@@ -30,15 +30,15 @@ public abstract class UFoneCommandInterface {
 
 	//please register handler before Reuest
 	public abstract void RequestIMU();
-	public delegate void IMUChangedHandler(int accx,int accy,int accz,int gyrx,int gyry,int gyrz,int magx,int magy,int magz);
+	public delegate void IMUChangedHandler(short accx,short accy,short accz,short gyrx,short gyry,short gyrz,short magx,short magy,short magz);
 	public IMUChangedHandler IMUResultEvent;
 
 	//please register handler before Request
 	public abstract void RequestRC();
-	public delegate void RCChangedHandler(int Roll,int Pitch,int Yaw,int Throttle,int AUX1,int AUX2,int AUX3,int AUX4);
+	public delegate void RCChangedHandler(ushort Roll,ushort Pitch,ushort Yaw,ushort Throttle,ushort AUX1,ushort AUX2,ushort AUX3,ushort AUX4);
 	public RCChangedHandler RCResultEvent;
 	
-	public delegate void AckHandler(int command);
+	public delegate void AckHandler(byte command);
 	public AckHandler AckEvent;
 
 	public delegate void UnhandledCommandHandler(byte[] command);
@@ -46,7 +46,7 @@ public abstract class UFoneCommandInterface {
 
 	
 	//Command
-	public abstract void SetRawRC (int Roll, int Pitch, int Yaw, int Throttle, int AUX1, int AUX2, int AUX3, int AUX4);
+	public abstract void SetRawRC (ushort Roll, ushort Pitch, ushort Yaw, ushort Throttle, ushort AUX1, ushort AUX2, ushort AUX3, ushort AUX4);
 
 
 

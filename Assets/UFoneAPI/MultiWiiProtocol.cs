@@ -12,6 +12,7 @@ public class MultiWiiProtocol : UFoneCommandInterface{
 
 	//Values
 	private const int SIZE_ZERO = 0;
+	private const int SIZE_SIXTEEN_BYTE = 16;
 
 	//Index
 	private const int CHECK_SUM_START_INDEX = 3;
@@ -203,15 +204,15 @@ public class MultiWiiProtocol : UFoneCommandInterface{
 		{
 			case MSP_RAW_IMU:
 			//Reference to the MultiWii-EZ GUI.
-			int accX = GetInt16(copied);
-			int accY = GetInt16(copied);
-			int accZ = GetInt16(copied);
-			int gyrX = GetInt16(copied)/8;
-			int gyrY = GetInt16(copied)/8;
-			int gyrZ = GetInt16(copied)/8;
-			int magX = GetInt16(copied)/3;
-			int magY = GetInt16(copied)/3;
-			int magZ = GetInt16(copied)/3;
+			short accX = GetInt16(copied);
+			short accY = GetInt16(copied);
+			short accZ = GetInt16(copied);
+			short gyrX = (short)(GetInt16(copied)/8);
+			short gyrY = (short)(GetInt16(copied)/8);
+			short gyrZ = (short)(GetInt16(copied)/8);
+			short magX = (short)(GetInt16(copied)/3);
+			short magY = (short)(GetInt16(copied)/3);
+			short magZ = (short)(GetInt16(copied)/3);
 				
 			if(IMUResultEvent !=null)
 			{
@@ -224,14 +225,14 @@ public class MultiWiiProtocol : UFoneCommandInterface{
 			break;
 
 			case MSP_RC:
-			int roll =  GetUNInt16(copied);
-			int pitch =  GetUNInt16(copied);
-			int yaw =  GetUNInt16(copied);
-			int throttle =  GetUNInt16(copied);
-			int AUX1 =  GetUNInt16(copied);
-			int AUX2 =  GetUNInt16(copied);
-			int AUX3 =  GetUNInt16(copied);
-			int AUX4 =  GetUNInt16(copied);
+			ushort roll =  GetUNInt16(copied);
+			ushort pitch =  GetUNInt16(copied);
+			ushort yaw =  GetUNInt16(copied);
+			ushort throttle =  GetUNInt16(copied);
+			ushort AUX1 =  GetUNInt16(copied);
+			ushort AUX2 =  GetUNInt16(copied);
+			ushort AUX3 =  GetUNInt16(copied);
+			ushort AUX4 =  GetUNInt16(copied);
 
 			if(RCResultEvent != null)
 			{
@@ -255,18 +256,18 @@ public class MultiWiiProtocol : UFoneCommandInterface{
 		target.RemoveRange (0, num);
 	}
 
-	public int GetUNInt16(List<byte> target)
+	public ushort GetUNInt16(List<byte> target)
 	{
-		int result = System.BitConverter.ToUInt16 (target.ToArray(),0);
+		ushort result = System.BitConverter.ToUInt16 (target.ToArray(),0);
 		target.RemoveRange (0, 2);
 		
 		return result;
 	}
 
 
-	public int GetInt16(List<byte> target)
+	public short GetInt16(List<byte> target)
 	{
-		int result = System.BitConverter.ToInt16 (target.ToArray(),0);
+		short result = System.BitConverter.ToInt16 (target.ToArray(),0);
 		target.RemoveRange (0, 2);
 
 		return result;
@@ -306,9 +307,42 @@ public class MultiWiiProtocol : UFoneCommandInterface{
 		return currentCommand;
 	}
 
-	override public void SetRawRC (int Roll, int Pitch, int Yaw, int Throttle, int AUX1, int AUX2, int AUX3, int AUX4)
+	override public void SetRawRC (ushort Roll, ushort Pitch, ushort Yaw, ushort Throttle, ushort AUX1, ushort AUX2, ushort AUX3, ushort AUX4)
 	{
+		List<byte> currentCommand = new List<byte>();
+		
+		currentCommand.AddRange (PREAMBLE_HEADER);
+		currentCommand.Add((byte)DIRECTION_TO_DRONE);
+		currentCommand.Add(SIZE_SIXTEEN_BYTE);
+		currentCommand.Add(MSP_SET_RAW_RC);
 
+		byte[] RollByte = System.BitConverter.GetBytes (Roll);
+		currentCommand.AddRange (RollByte);
+
+		byte[] PitchByte = System.BitConverter.GetBytes (Pitch);
+		currentCommand.AddRange (PitchByte);
+
+		byte[] YawByte = System.BitConverter.GetBytes (Yaw);
+		currentCommand.AddRange (YawByte);
+
+		byte[] ThrottleByte = System.BitConverter.GetBytes (Throttle);
+		currentCommand.AddRange (ThrottleByte);
+
+		byte[] AUX1Byte = System.BitConverter.GetBytes (AUX1);
+		currentCommand.AddRange (AUX1Byte);
+
+		byte[] AUX2Byte = System.BitConverter.GetBytes (AUX2);
+		currentCommand.AddRange (AUX2Byte);
+
+		byte[] AUX3Byte = System.BitConverter.GetBytes (AUX3);
+		currentCommand.AddRange (AUX3Byte);
+
+		byte[] AUX4Byte = System.BitConverter.GetBytes (AUX4);
+		currentCommand.AddRange (AUX4Byte);
+
+		AddCheckSum(currentCommand,CHECK_SUM_START_INDEX);
+
+		dataToSend.AddRange(currentCommand);
 	}
 
 	private void AddCheckSum(List<byte> bytes, int StartIndex)
