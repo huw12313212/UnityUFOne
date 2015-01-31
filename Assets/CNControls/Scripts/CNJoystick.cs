@@ -80,6 +80,9 @@ public class CNJoystick : CNAbstractController
         
     }
 
+	public bool ResetToZero = true;
+	public Vector3 HomePosition = new Vector3(0,0,0);
+
     /// <summary>
     /// In this method we also need to set the stick and base local transforms back to zero
     /// </summary>
@@ -87,9 +90,13 @@ public class CNJoystick : CNAbstractController
     {
         base.ResetControlState();
         // Setting the stick and base local positions back to local zero
-        _stickTransform.localPosition = 
-            _baseTransform.localPosition = Vector3.zero;
-    }
+
+		if(ResetToZero)
+		{
+			_stickTransform.localPosition = HomePosition;
+			_baseTransform.localPosition = Vector3.zero;
+		}
+	}
 
     /// <summary>
     /// We also check if we should hide the joystick

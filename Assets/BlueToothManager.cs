@@ -121,9 +121,17 @@ public class BlueToothManager : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-		if (isConnected) 
+		if(UpdateRCCounter>UpdateRCPeriod)
 		{
-			UFOneAPI.SetRawRC(ROLL,PITCH,YAW,THROTTLE,AUX1,AUX2,AUX3,AUX4);
+			UpdateRCCounter = 0;
+			if (isConnected) 
+			{
+				UFOneAPI.SetRawRC(ROLL,PITCH,YAW,THROTTLE,AUX1,AUX2,AUX3,AUX4);
+			}
+		}
+		else
+		{
+			UpdateRCCounter+= Time.deltaTime;
 		}
 
 		HandleBlueTooth();
@@ -131,6 +139,9 @@ public class BlueToothManager : MonoBehaviour {
 		UpdateView ();
 
 	}
+
+	public float UpdateRCPeriod;
+	private float UpdateRCCounter =0;
 
 	void HandleBlueTooth()
 	{
