@@ -93,7 +93,7 @@ public class BlueToothManager : MonoBehaviour {
 			Debug.Log("Left:"+position.x+":"+position.y);
 		};
 
-		leftStick.ControllerMovedEvent+= (position, stick) => 
+		rightStick.ControllerMovedEvent+= (position, stick) => 
 		{
 			int dif = (RANGE_MAX - RANGE_MIN) / 2;
 			int mean = (RANGE_MAX + RANGE_MIN) / 2;
