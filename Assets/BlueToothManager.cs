@@ -87,10 +87,16 @@ public class BlueToothManager : MonoBehaviour {
 			int dif = (RANGE_MAX - RANGE_MIN) / 2;
 			int mean = (RANGE_MAX + RANGE_MIN) / 2;
 
-			ROLL = (ushort) (position.x * dif + mean);
-			PITCH = (ushort)(position.y * dif + mean);
+			ROLL = (ushort) (position.x * dif /4+ mean);
+			PITCH = (ushort)(position.y * dif /4+ mean);
 
 			Debug.Log("Left:"+position.x+":"+position.y);
+		};
+
+		leftStick.FingerLiftedEvent+=(CNAbstractController o)=>
+		{
+			ROLL = 1500;
+			PITCH = 1500;
 		};
 
 		rightStick.ControllerMovedEvent+= (position, stick) => 
@@ -98,7 +104,7 @@ public class BlueToothManager : MonoBehaviour {
 			int dif = (RANGE_MAX - RANGE_MIN) / 2;
 			int mean = (RANGE_MAX + RANGE_MIN) / 2;
 			
-			YAW = (ushort)(position.x * dif + mean);
+			YAW = (ushort)(position.x * dif/4 + mean);
 			THROTTLE = (ushort)(position.y * dif + mean);
 
 			Debug.Log("Right:"+position.x+":"+position.y);
