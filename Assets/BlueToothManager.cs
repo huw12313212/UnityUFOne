@@ -62,12 +62,16 @@ public class BlueToothManager : MonoBehaviour {
 	public void ARM()
 	{
 		AUX1 = RANGE_MAX;
+		AUX2 = RANGE_MAX;
+		THROTTLE = RANGE_MIN;
 		Armed = true;
 	}
 
 	public void DISARM()
 	{
 		AUX1 = RANGE_MIN;
+		AUX2 = RANGE_MIN;
+		THROTTLE = RANGE_MIN;
 		Armed = false;
 	}
 
