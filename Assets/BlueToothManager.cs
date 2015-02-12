@@ -65,6 +65,8 @@ public class BlueToothManager : MonoBehaviour {
 		AUX2 = RANGE_MAX;
 		THROTTLE = RANGE_MIN;
 		Armed = true;
+		ROLL = _defaultRoll;
+		PITCH = _defaultPitch;
 	}
 
 	public void DISARM()
@@ -73,7 +75,71 @@ public class BlueToothManager : MonoBehaviour {
 		AUX2 = RANGE_MIN;
 		THROTTLE = RANGE_MIN;
 		Armed = false;
+		ROLL = _defaultRoll;
+		PITCH = _defaultPitch;
 	}
+
+	private ushort _defaultRoll = 1500;
+	private ushort _defaultPitch = 1500;
+	public ushort DefaultRoll
+	{
+		get
+		{
+			return _defaultRoll;
+		}
+		set
+		{
+			_defaultRoll = value;
+			ROLL = _defaultRoll;
+		}
+	}
+
+	public ushort DefaultPitch
+	{
+		get
+		{
+			return _defaultPitch;
+		}
+		set
+		{
+			_defaultPitch = value;
+			PITCH = _defaultPitch;
+		}
+	}
+
+	public void AddPitch()
+	{
+		DefaultPitch++;
+	}
+
+	public void SubstractPitch()
+	{
+		DefaultPitch--;
+	}
+
+	public void AddRoll()
+	{
+		DefaultRoll++;
+	}
+	
+	public void SubstractRoll()
+	{
+		DefaultRoll--;
+	}
+
+
+
+	public const int RANGE_MAX = 2000;
+	public const int RANGE_MIN = 1000;
+	
+	private ushort YAW = 1500;
+	private ushort PITCH = 1500;
+	private ushort ROLL = 1500;
+	private ushort THROTTLE = 1000;
+	private ushort AUX1 = 1000;
+	private ushort AUX2 = 1000;
+	private ushort AUX3 = 1000;
+	private ushort AUX4 = 1000;
 
 	// Use this for initialization
 	void Start () {
@@ -99,8 +165,8 @@ public class BlueToothManager : MonoBehaviour {
 
 		leftStick.FingerLiftedEvent+=(CNAbstractController o)=>
 		{
-			ROLL = 1500;
-			PITCH = 1500;
+			ROLL = _defaultRoll;
+			PITCH = _defaultPitch;
 		};
 
 		rightStick.ControllerMovedEvent+= (position, stick) => 
@@ -115,17 +181,7 @@ public class BlueToothManager : MonoBehaviour {
 		};
 	}
 
-	public const int RANGE_MAX = 2000;
-	public const int RANGE_MIN = 1000;
 
-	private ushort YAW = 1500;
-	private ushort PITCH = 1500;
-	private ushort ROLL = 1500;
-	private ushort THROTTLE = 1000;
-	private ushort AUX1 = 1000;
-	private ushort AUX2 = 1000;
-	private ushort AUX3 = 1000;
-	private ushort AUX4 = 1000;
 
 	
 	// Update is called once per frame
